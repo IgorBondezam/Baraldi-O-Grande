@@ -1,0 +1,79 @@
+scalar DateTime
+scalar Date
+
+type Task {
+    id: ID!
+    title: String!
+    description: String
+    completed: Boolean!
+    createdAt: DateTime
+    updatedAt: DateTime
+    dueDate: DateTime
+    priority: TaskPriority
+    user: User!
+}
+
+type User {
+    id: ID!
+    username: String!
+    email: String!
+    roles: [String]
+    tasks: [Task]
+}
+
+enum TaskPriority {
+    LOW
+    MEDIUM
+    HIGH
+}
+
+input TaskInput {
+    title: String!
+    description: String
+    completed: Boolean
+    dueDate: DateTime
+    priority: TaskPriority
+}
+
+input TaskUpdateInput {
+    title: String
+    description: String
+    completed: Boolean
+    dueDate: DateTime
+    priority: TaskPriority
+}
+
+type JwtResponse {
+    token: String!
+    type: String!
+    id: ID!
+    username: String!
+    email: String!
+    roles: [String]!
+}
+
+type MessageResponse {
+    message: String!
+}
+
+type Query {
+    getAllTasks: [Task]!
+    getTaskById(id: ID!): Task
+    getTasksByStatus(completed: Boolean!): [Task]!
+    getTasksByPriority(priority: TaskPriority!): [Task]!
+    getOverdueTasks: [Task]!
+    getPendingTasks: [Task]!
+    searchTasks(title: String!): [Task]!
+}
+
+type Mutation {
+    # Autenticação
+    login(username: String!, password: String!): JwtResponse!
+    register(username: String!, email: String!, password: String!, roles: [String]): MessageResponse!
+    
+    # Tarefas
+    createTask(input: TaskInput!): Task!
+    updateTask(id: ID!, input: TaskUpdateInput!): Task!
+    toggleTaskCompletion(id: ID!): Task!
+    deleteTask(id: ID!): Boolean!
+}
